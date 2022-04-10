@@ -2,13 +2,21 @@ const asyncHandler = require('express-async-handler');
 
 const Exercise = require('../models/exerciseModel');
 
-// TODO: Filter exercises by: bodySections, bodyParts
-
 // @desc Get user workouts
 // @route GET /api/exercises
 // @access Public
 const getExercises = asyncHandler(async (req, res) => {
-  const exercises = await Exercise.find();
+  const { bodySection, bodyPart } = req.query;
+
+  const query = {};
+  if (bodySection) {
+    query['bodySections'] = bodySection;
+  }
+  if (bodyPart) {
+    query['bodyParts'] = bodyPart;
+  }
+
+  const exercises = await Exercise.find(query);
 
   res.status(200).json(exercises);
 });

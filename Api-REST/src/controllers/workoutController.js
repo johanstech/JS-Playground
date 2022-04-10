@@ -2,8 +2,6 @@ const asyncHandler = require('express-async-handler');
 
 const Workout = require('../models/workoutModel');
 
-// TODO: Functions to get workouts by filter: date, bodySections, bodyParts
-
 // @desc Get user workouts
 // @route GET /api/workouts
 // @access Private
