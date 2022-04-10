@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const workoutSchema = mongoose.Schema(
   {
     userId: {
-      type: String,
-      required: [true, 'Provide a User Id.'],
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
     },
     unit: {
       type: String,

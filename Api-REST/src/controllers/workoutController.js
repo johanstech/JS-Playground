@@ -2,18 +2,18 @@ const asyncHandler = require('express-async-handler');
 
 const Workout = require('../models/workoutModel');
 
-// TODO: Functions to get workouts by filter: userId, date, bodySections, bodyParts
+// TODO: Functions to get workouts by filter: date, bodySections, bodyParts
 
-// @desc Get User's logged workouts
+// @desc Get user workouts
 // @route GET /api/workouts
 // @access Private
 const getWorkouts = asyncHandler(async (req, res) => {
-  const workouts = await Workout.find();
+  const workouts = await Workout.find({ userId: req.user.id });
 
   res.status(200).json(workouts);
 });
 
-// @desc Log a User workout
+// @desc Create user workout
 // @route POST /api/workouts
 // @access Private
 const createWorkout = asyncHandler(async (req, res) => {
@@ -24,7 +24,7 @@ const createWorkout = asyncHandler(async (req, res) => {
 
   console.log(req.body);
   const workout = await Workout.create({
-    userId: req.body.userId,
+    userId: req.user.id,
     unit: req.body.unit,
     date: new Date(req.body.date),
     elapsedTime: req.body.elapsedTime,
@@ -36,7 +36,7 @@ const createWorkout = asyncHandler(async (req, res) => {
   res.status(201).json(workout);
 });
 
-// @desc Update a User workout
+// @desc Update user workout
 // @route PUT /api/workouts/:id
 // @access Private
 const updateWorkout = asyncHandler(async (req, res) => {
@@ -45,6 +45,11 @@ const updateWorkout = asyncHandler(async (req, res) => {
   if (!workout) {
     res.status(400);
     throw new Error(`No workout found with Id: ${req.params.id}`);
+  }
+
+  if (workout.userId.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('Unauthorized.');
   }
 
   const updatedWorkout = await Workout.findByIdAndUpdate(
@@ -56,7 +61,7 @@ const updateWorkout = asyncHandler(async (req, res) => {
   res.status(200).json(updatedWorkout);
 });
 
-// @desc Delete a User workout
+// @desc Delete user workout
 // @route DELETE /api/workouts/:id
 // @access Private
 const deleteWorkout = asyncHandler(async (req, res) => {
@@ -65,6 +70,11 @@ const deleteWorkout = asyncHandler(async (req, res) => {
   if (!workout) {
     res.status(400);
     throw new Error(`No workout found with Id: ${req.params.id}`);
+  }
+
+  if (workout.userId.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('Unauthorized.');
   }
 
   await workout.remove();
