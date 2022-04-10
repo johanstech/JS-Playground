@@ -22,15 +22,29 @@ const createWorkout = asyncHandler(async (req, res) => {
     throw new Error('Missing request body.');
   }
 
-  console.log(req.body);
+  const { unit, date, elapsedTime, bodySections, bodyParts, exercises } =
+    req.body;
+
+  if (
+    !unit ||
+    !date ||
+    !elapsedTime ||
+    !bodySections ||
+    !bodyParts ||
+    !exercises
+  ) {
+    res.status(400);
+    throw new Error('Provide data for all fields.');
+  }
+
   const workout = await Workout.create({
     userId: req.user.id,
-    unit: req.body.unit,
-    date: new Date(req.body.date),
-    elapsedTime: req.body.elapsedTime,
-    bodySections: req.body.bodySections,
-    bodyParts: req.body.bodyParts,
-    exercises: req.body.exercises,
+    unit,
+    date: new Date(date),
+    elapsedTime,
+    bodySections,
+    bodyParts,
+    exercises,
   });
 
   res.status(201).json(workout);
@@ -40,8 +54,12 @@ const createWorkout = asyncHandler(async (req, res) => {
 // @route PUT /api/workouts/:id
 // @access Private
 const updateWorkout = asyncHandler(async (req, res) => {
-  const workout = await Workout.findById(req.params.id);
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    res.status(400);
+    throw new Error('Missing request body.');
+  }
 
+  const workout = await Workout.findById(req.params.id);
   if (!workout) {
     res.status(400);
     throw new Error(`No workout found with Id: ${req.params.id}`);
@@ -66,7 +84,6 @@ const updateWorkout = asyncHandler(async (req, res) => {
 // @access Private
 const deleteWorkout = asyncHandler(async (req, res) => {
   const workout = await Workout.findById(req.params.id);
-
   if (!workout) {
     res.status(400);
     throw new Error(`No workout found with Id: ${req.params.id}`);

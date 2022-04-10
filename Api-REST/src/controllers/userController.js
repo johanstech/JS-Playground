@@ -54,7 +54,6 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       _id: user.id,
@@ -81,6 +80,11 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 // @route PUT /api/users/current
 // @access Private
 const updateCurrentUser = asyncHandler(async (req, res) => {
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    res.status(400);
+    throw new Error('Missing request body.');
+  }
+
   const user = await User.findById(req.user.id);
   if (!user) {
     res.status(400);
