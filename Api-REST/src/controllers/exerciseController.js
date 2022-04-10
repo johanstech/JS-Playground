@@ -49,7 +49,48 @@ const createExercise = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc Update an exercise
+// @route PUT /api/exercises
+// @access Public
+const updateExercise = asyncHandler(async (req, res) => {
+  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    res.status(400);
+    throw new Error('Missing request body.');
+  }
+
+  const exercise = await Exercise.findById(req.params.id);
+  if (!exercise) {
+    res.status(400);
+    throw new Error(`No exercise found with Id: ${req.params.id}`);
+  }
+
+  const updatedExercise = await Exercise.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  res.status(200).json(updatedExercise);
+});
+
+// @desc Delete an exercise
+// @route DELETE /api/exercises
+// @access Public
+const deleteExercise = asyncHandler(async (req, res) => {
+  const exercise = await Exercise.findById(req.params.id);
+  if (!exercise) {
+    res.status(400);
+    throw new Error(`No exercise found with Id: ${req.params.id}`);
+  }
+
+  await exercise.remove();
+
+  res.status(200).json({ id: req.params.id });
+});
+
 module.exports = {
   getExercises,
   createExercise,
+  updateExercise,
+  deleteExercise,
 };
