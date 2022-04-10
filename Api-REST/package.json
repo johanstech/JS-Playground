@@ -1,0 +1,19 @@
+{
+  "name": "api-rest",
+  "author": "Johan Andersson",
+  "license": "ISC",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node src/server.js",
+    "server": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.10"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
