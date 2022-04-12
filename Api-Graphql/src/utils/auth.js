@@ -1,9 +1,11 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/userModel');
+const User = require('../models');
 
-const protect = asyncHandler(async (req, res, next) => {
+const expiration = '30d';
+
+const authMiddleware = asyncHandler(async (req, res, next) => {
   let token;
 
   if (
@@ -31,4 +33,10 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { protect };
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: expiration,
+  });
+};
+
+module.exports = { authMiddleware, signToken };

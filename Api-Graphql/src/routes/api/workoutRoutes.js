@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { protect } = require('../../middleware/authMiddleware');
+const { authMiddleware } = require('../../utils/auth');
 
 const {
   getWorkouts,
@@ -9,7 +9,13 @@ const {
   deleteWorkout,
 } = require('../../controllers/workoutController');
 
-router.route('/').get(protect, getWorkouts).post(protect, createWorkout);
-router.route('/:id').put(protect, updateWorkout).delete(protect, deleteWorkout);
+router
+  .route('/')
+  .get(authMiddleware, getWorkouts)
+  .post(authMiddleware, createWorkout);
+router
+  .route('/:id')
+  .put(authMiddleware, updateWorkout)
+  .delete(authMiddleware, deleteWorkout);
 
 module.exports = router;
