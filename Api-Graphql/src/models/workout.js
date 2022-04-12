@@ -9,59 +9,59 @@ const workoutSchema = mongoose.Schema(
     },
     unit: {
       type: String,
-      required: [true, 'Provide a Unit type(metric/imperial).'],
+      required: true,
     },
     date: {
       type: Date,
-      required: [true, 'Provide a Date.'],
+      required: true,
     },
     elapsedTime: {
       type: Number,
-      required: [true, 'Provide Elapsed Time in seconds.'],
+      required: true,
     },
     bodySections: [
       {
         type: String,
-        required: [true, 'Provide a Body Section.'],
+        required: true,
       },
     ],
     bodyParts: [
       {
         type: String,
-        required: [true, 'Provide a Body Part.'],
+        required: true,
       },
     ],
     exercises: [
       {
         name: {
           type: String,
-          required: [true, 'Provide a Name.'],
+          required: true,
         },
         bodySections: [
           {
             type: String,
-            required: [true, 'Provide a Body Section.'],
+            required: true,
           },
         ],
         bodyParts: [
           {
             type: String,
-            required: [true, 'Provide a Body Part.'],
+            required: true,
           },
         ],
         description: {
           type: String,
-          required: [true, 'Provide a Description.'],
+          required: true,
         },
         sets: [
           {
             weight: {
               type: Number,
-              required: [true, 'Provide a Weight.'],
+              required: true,
             },
             repetitions: {
               type: Number,
-              required: [true, 'Provide number of Repetitions.'],
+              required: true,
             },
           },
         ],

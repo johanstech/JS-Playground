@@ -4,24 +4,24 @@ const exerciseSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Provide a Name.'],
+      required: true,
       unique: true,
     },
     bodySections: [
       {
         type: String,
-        required: [true, 'Provide a Body Section.'],
+        required: true,
       },
     ],
     bodyParts: [
       {
         type: String,
-        required: [true, 'Provide a Body Part.'],
+        required: true,
       },
     ],
     description: {
       type: String,
-      required: [true, 'Provide a Description.'],
+      required: true,
     },
   },
   {
