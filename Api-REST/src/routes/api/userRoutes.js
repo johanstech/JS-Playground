@@ -1,14 +1,13 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../../middleware/authMiddleware');
 
 const {
   registerUser,
   loginUser,
   getCurrentUser,
   updateCurrentUser,
-} = require('../controllers/userController');
+} = require('../../controllers/userController');
 
 router.post('/', registerUser);
 router.post('/login', loginUser);
