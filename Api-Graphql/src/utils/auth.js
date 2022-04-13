@@ -1,36 +1,35 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models');
+const { User, Token } = require('../models');
 
-const expiration = '30d';
+const expiration = '1d';
 
-const authMiddleware = asyncHandler(async (req, res, next) => {
+const authMiddleware = asyncHandler(async ({ req }) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      req.user = await User.findById(decoded.id).select('-password');
-
-      next();
-    } catch (e) {
-      console.log(e);
-      res.status(401);
-      throw new Error('Not authorized.');
-    }
+  if (req.headers.authorization) {
+    token = req.headers.authorization.split(' ').pop().trim();
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error('Not authorized, no token.');
+    return req;
   }
+
+  const expiredToken = await Token.findOne({ token });
+  if (expiredToken) {
+    return req;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select('-password');
+    req.user.token = token;
+  } catch (e) {
+    console.log(e);
+  }
+
+  return req;
 });
 
 const signToken = (id) => {

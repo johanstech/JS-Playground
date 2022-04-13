@@ -5,39 +5,40 @@ const dotenv = require('dotenv').config();
 
 const port = process.env.PORT || 5000;
 
-const { connectDB } = require('./config/db');
+const db = require('./config/db');
 const { errorMiddleware } = require('./utils/error');
 const { authMiddleware } = require('./utils/auth');
 const { typeDefs, resolvers } = require('./schemas');
 
 const routes = require('./routes');
 
-connectDB();
-
 const app = express();
-// const server = new ApolloServer({
-//   typeDefs,
-//   resolvers,
-//   context: authMiddleware,
-// });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: authMiddleware,
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(routes);
 app.use(errorMiddleware);
 
-app.listen(port, () => {
-  console.log(`API server running on port: ${port}`);
-});
+const startApolloServer = async (typeDefs, resolvers) => {
+  db.once('open', async () => {
+    console.log(`MongoDB Connected: ${db.host}`.cyan.underline);
 
-// const startApolloServer = async (typeDefs, resolvers) => {
-//   await server.start();
-//   server.applyMiddleware({ app });
+    await server.start();
+    server.applyMiddleware({ app });
 
-//   app.listen(port, () => {
-//     console.log(`API server running on port: ${port}`);
-//     console.log(`GraphQL at http://localhost:${port}${server.graphqlPath}`);
-//   });
-// };
+    app.listen(port, () => {
+      console.log(`API server running on port: ${port}`.cyan.underline);
+      console.log(
+        `GraphQL at http://localhost:${port}${server.graphqlPath}`.cyan
+          .underline
+      );
+    });
+  });
+};
 
-// startApolloServer(typeDefs, resolvers);
+startApolloServer(typeDefs, resolvers);
