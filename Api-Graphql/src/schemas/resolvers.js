@@ -1,14 +1,30 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { User, Token } = require('../models');
+const { User, Token, Exercise } = require('../models');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
   Query: {
     currentUser: async (_root, args, context) => {
-      if (context.user) {
-        return User.findOne({ _id: context.user._id }).select('-password');
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
       }
-      throw new AuthenticationError('No logged in user.');
+      return User.findById(context.user._id).select('-password');
+    },
+    getExercises: async (_root, args, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
+      }
+      const { bodySection, bodyPart } = args;
+      const query = {};
+      if (bodySection) {
+        query['bodySections'] = bodySection;
+      }
+      if (bodyPart) {
+        query['bodyParts'] = bodyPart;
+      }
+
+      const exercises = await Exercise.find(query);
+      return exercises;
     },
   },
   Mutation: {
@@ -38,8 +54,41 @@ const resolvers = {
       if (!context.user) {
         throw new AuthenticationError('No logged in user.');
       }
-      const updatedUser = await User.findByIdAndUpdate(context.user._id, args);
+      const updatedUser = await User.findByIdAndUpdate(context.user._id, args, {
+        new: true,
+      });
       return updatedUser._id;
+    },
+    createExercise: async (_root, args, context) => {
+      const exercise = await Exercise.create(args);
+      return exercise._id;
+    },
+    updateExercise: async (_root, args, context) => {
+      const { id, name, description, bodySections, bodyParts } = args;
+      const query = {};
+      if (name) {
+        query['name'] = name;
+      }
+      if (description) {
+        query['description'] = description;
+      }
+      if (bodySections) {
+        query['bodySections'] = bodySections;
+      }
+      if (bodyParts) {
+        query['bodyParts'] = bodyParts;
+      }
+      const updatedExercise = await Exercise.findByIdAndUpdate(id, query, {
+        new: true,
+      });
+      return updatedExercise._id;
+    },
+    deleteExercise: async (_root, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
+      }
+      const deletedExercise = Exercise.findByIdAndDelete(id);
+      return deletedExercise._id;
     },
   },
 };

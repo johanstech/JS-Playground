@@ -15,8 +15,16 @@ const typeDefs = gql`
     token: String
     user: User
   }
+  type Exercise {
+    _id: ID
+    name: String
+    description: String
+    bodySections: [String]
+    bodyParts: [String]
+  }
   type Query {
     currentUser: User
+    getExercises(bodySection: String, bodyPart: String): [Exercise]
   }
   type Mutation {
     login(email: String!, password: String!): Auth
@@ -38,6 +46,20 @@ const typeDefs = gql`
       weight: Int
       unit: String
     ): ID
+    createExercise(
+      name: String!
+      description: String!
+      bodySections: [String]!
+      bodyParts: [String]!
+    ): ID
+    updateExercise(
+      id: ID
+      name: String
+      description: String
+      bodySections: [String]
+      bodyParts: [String]
+    ): ID
+    deleteExercise(id: ID!): ID
   }
 `;
 
