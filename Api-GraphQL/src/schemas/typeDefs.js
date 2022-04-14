@@ -11,12 +11,27 @@ const typeDefs = gql`
     weight: Int
     unit: String
   }
+  input UserInput {
+    email: String
+    password: String
+    name: String
+    gender: String
+    height: Int
+    weight: Int
+    unit: String
+  }
   type Auth {
     token: String
     user: User
   }
   type Exercise {
     _id: ID
+    name: String
+    description: String
+    bodySections: [String]
+    bodyParts: [String]
+  }
+  input ExerciseInput {
     name: String
     description: String
     bodySections: [String]
@@ -72,36 +87,10 @@ const typeDefs = gql`
   type Mutation {
     login(email: String!, password: String!): Auth
     logout: ID
-    register(
-      name: String!
-      email: String!
-      password: String!
-      gender: String!
-      height: Int!
-      weight: Int!
-      unit: String!
-    ): Auth
-    updateCurrentUser(
-      name: String
-      email: String
-      gender: String
-      height: Int
-      weight: Int
-      unit: String
-    ): ID
-    createExercise(
-      name: String!
-      description: String!
-      bodySections: [String]!
-      bodyParts: [String]!
-    ): ID
-    updateExercise(
-      id: ID
-      name: String
-      description: String
-      bodySections: [String]
-      bodyParts: [String]
-    ): ID
+    register(user: UserInput!): Auth
+    updateCurrentUser(user: UserInput!): ID
+    createExercise(exercise: ExerciseInput!): ID
+    updateExercise(id: ID!, exercise: ExerciseInput!): ID
     deleteExercise(id: ID!): ID
     createWorkout(workout: WorkoutInput!): ID
     updateWorkout(id: ID!, workout: WorkoutInput!): ID

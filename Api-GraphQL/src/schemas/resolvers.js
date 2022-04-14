@@ -31,7 +31,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    login: async (_root, { email, password }) => {
+    login: async (_root, { email, password }, context) => {
       const user = await User.findOne({ email });
       if (user && (await user.isCorrectPassword(password))) {
         const token = signToken(user._id);
@@ -48,40 +48,26 @@ const resolvers = {
       const expiredToken = await Token.create({ token });
       return expiredToken._id;
     },
-    register: async (_root, args) => {
-      const user = await User.create(args);
-      const token = signToken(user._id);
-      return { token, user };
+    register: async (_root, { user }, context) => {
+      const createdUser = await User.create(user);
+      const token = signToken(createdUser._id);
+      return { token, user: createdUser };
     },
-    updateCurrentUser: async (_root, args, context) => {
+    updateCurrentUser: async (_root, { user }, context) => {
       if (!context.user) {
         throw new AuthenticationError('No logged in user.');
       }
-      const updatedUser = await User.findByIdAndUpdate(context.user._id, args, {
+      const updatedUser = await User.findByIdAndUpdate(context.user._id, user, {
         new: true,
       });
       return updatedUser._id;
     },
-    createExercise: async (_root, args, context) => {
-      const exercise = await Exercise.create(args);
-      return exercise._id;
+    createExercise: async (_root, { exercise }, context) => {
+      const createdExercise = await Exercise.create(exercise);
+      return createdExercise._id;
     },
-    updateExercise: async (_root, args, context) => {
-      const { id, name, description, bodySections, bodyParts } = args;
-      const query = {};
-      if (name) {
-        query['name'] = name;
-      }
-      if (description) {
-        query['description'] = description;
-      }
-      if (bodySections) {
-        query['bodySections'] = bodySections;
-      }
-      if (bodyParts) {
-        query['bodyParts'] = bodyParts;
-      }
-      const updatedExercise = await Exercise.findByIdAndUpdate(id, query, {
+    updateExercise: async (_root, { id, exercise }, context) => {
+      const updatedExercise = await Exercise.findByIdAndUpdate(id, exercise, {
         new: true,
       });
       return updatedExercise._id;
