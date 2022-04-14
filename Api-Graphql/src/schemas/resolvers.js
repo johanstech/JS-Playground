@@ -1,5 +1,6 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { User, Token, Exercise } = require('../models');
+const datefns = require('date-fns');
+const { User, Token, Exercise, Workout } = require('../models');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
@@ -11,9 +12,6 @@ const resolvers = {
       return User.findById(context.user._id).select('-password');
     },
     getExercises: async (_root, args, context) => {
-      if (!context.user) {
-        throw new AuthenticationError('No logged in user.');
-      }
       const { bodySection, bodyPart } = args;
       const query = {};
       if (bodySection) {
@@ -22,9 +20,15 @@ const resolvers = {
       if (bodyPart) {
         query['bodyParts'] = bodyPart;
       }
-
       const exercises = await Exercise.find(query);
       return exercises;
+    },
+    getWorkouts: async (_root, args, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
+      }
+      const workouts = await Workout.find({ userId: context.user._id });
+      return workouts;
     },
   },
   Mutation: {
@@ -84,11 +88,32 @@ const resolvers = {
       return updatedExercise._id;
     },
     deleteExercise: async (_root, { id }, context) => {
+      const deletedExercise = await Exercise.findByIdAndDelete(id);
+      return deletedExercise._id;
+    },
+    createWorkout: async (_root, { workout }, context) => {
       if (!context.user) {
         throw new AuthenticationError('No logged in user.');
       }
-      const deletedExercise = Exercise.findByIdAndDelete(id);
-      return deletedExercise._id;
+      workout['userId'] = context.user._id;
+      const createdWorkout = await Workout.create(workout);
+      return createdWorkout._id;
+    },
+    updateWorkout: async (_root, { id, workout }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
+      }
+      const updatedWorkout = await Workout.findByIdAndUpdate(id, workout, {
+        new: true,
+      });
+      return updatedWorkout._id;
+    },
+    deleteWorkout: async (_root, { id }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('No logged in user.');
+      }
+      const deletedWorkout = await Workout.findByIdAndDelete(id);
+      return deletedWorkout._id;
     },
   },
 };
