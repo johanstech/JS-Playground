@@ -5,4 +5,5 @@ Collection of JavaScript/TypeScript projects for educational purposes and future
 |  #  |                                         Project                                          |
 | :-: | :--------------------------------------------------------------------------------------: |
 | 01  |    [Node REST Api](https://github.com/johanstech/JS-Playground/tree/master/Api-REST/)    |
-| 01  | [Node Graphql Api](https://github.com/johanstech/JS-Playground/tree/master/Api-Graphql/) |
+| 02  | [Node GraphQL Api](https://github.com/johanstech/JS-Playground/tree/master/Api-GraphQL/) |
+| 03  |                   [TBA](https://github.com/johanstech/JS-Playground/)                    |
