@@ -10,8 +10,6 @@ const { errorMiddleware } = require('./utils/error');
 const { authMiddleware } = require('./utils/auth');
 const { typeDefs, resolvers } = require('./schemas');
 
-const routes = require('./routes');
-
 const app = express();
 const server = new ApolloServer({
   typeDefs,
@@ -21,7 +19,6 @@ const server = new ApolloServer({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(routes);
 app.use(errorMiddleware);
 
 const startApolloServer = async (typeDefs, resolvers) => {

@@ -1,5 +1,4 @@
 const { AuthenticationError } = require('apollo-server-express');
-const datefns = require('date-fns');
 const { User, Token, Exercise, Workout } = require('../models');
 const { signToken } = require('../utils/auth');
 
