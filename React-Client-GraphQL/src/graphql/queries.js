@@ -38,8 +38,8 @@ export const GET_WORKOUTS = gql`
 `;
 
 export const GET_EXERCISES = gql`
-  query {
-    getExercises {
+  query getExercises($bodySection: String, $bodyPart: String) {
+    getExercises(bodySection: $bodySection, bodyPart: $bodyPart) {
       _id
       name
       description
