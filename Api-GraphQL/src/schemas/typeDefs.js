@@ -7,8 +7,8 @@ const typeDefs = gql`
     password: String
     name: String
     gender: String
-    height: Int
-    weight: Int
+    height: Float
+    weight: Float
     unit: String
   }
   input UserInput {
@@ -16,8 +16,8 @@ const typeDefs = gql`
     password: String
     name: String
     gender: String
-    height: Int
-    weight: Int
+    height: Float
+    weight: Float
     unit: String
   }
   type Auth {

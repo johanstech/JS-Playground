@@ -4,61 +4,39 @@ import { useMutation } from '@apollo/client';
 import { userMutations } from '../../graphql';
 import Auth from '../../utils/auth';
 
-import { Textfield } from '../Textfield/';
+import { Textfield, Select } from '../input';
 
 import './Register.scss';
+
+const genders = ['male', 'female'];
+const units = ['metric', 'imperial'];
 
 export const Register = () => {
   const [registerUser, { error }] = useMutation(userMutations.register);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [gender, setGender] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [unit, setUnit] = useState('');
+  const [userState, setUserState] = useState({
+    email: '',
+    password: '',
+    name: '',
+    gender: '',
+    height: null,
+    weight: null,
+    unit: '',
+  });
 
-  const onChangeName = (newValue) => {
-    setName(newValue);
-  };
-
-  const onChangeEmail = (newValue) => {
-    setEmail(newValue);
-  };
-
-  const onChangePassword = (newValue) => {
-    setPassword(newValue);
-  };
-
-  const onChangeGender = (newValue) => {
-    setGender(newValue);
-  };
-
-  const onChangeHeight = (newValue) => {
-    const parsedHeight = parseInt(newValue);
-    setHeight(parsedHeight);
-  };
-
-  const onChangeWeight = (newValue) => {
-    const parsedWeight = parseInt(newValue);
-    setWeight(parsedWeight);
-  };
-
-  const onChangeUnit = (newValue) => {
-    setUnit(newValue);
+  const handleChange = (e) => {
+    let { name, value } = e.target;
+    if (name === 'height' || name === 'weight') {
+      value = parseFloat(value);
+    }
+    setUserState({
+      ...userState,
+      [name]: value,
+    });
   };
 
   const onClickRegister = async () => {
-    const newUser = {
-      name,
-      email,
-      password,
-      gender,
-      height,
-      weight,
-      unit,
-    };
+    const newUser = userState;
 
     const { data } = await registerUser({
       variables: {
@@ -67,55 +45,64 @@ export const Register = () => {
     });
 
     if (data) {
-      Auth.login(data.register.token);
+      Auth.login(data.register);
     }
   };
 
   return (
     <div>
-      <h1>Register new user</h1>
-      <Textfield
-        id="name"
-        label="Name"
-        defaultValue={name}
-        onValueChange={onChangeName}
-      />
-      <Textfield
-        id="email"
-        label="Email"
-        defaultValue={email}
-        onValueChange={onChangeEmail}
-      />
-      <Textfield
-        id="password"
-        label="Password"
-        defaultValue={password}
-        onValueChange={onChangePassword}
-      />
-      <Textfield
-        id="gender"
-        label="Gender"
-        defaultValue={gender}
-        onValueChange={onChangeGender}
-      />
-      <Textfield
-        id="height"
-        label="Height"
-        defaultValue={height}
-        onValueChange={onChangeHeight}
-      />
-      <Textfield
-        id="weight"
-        label="Weight"
-        defaultValue={weight}
-        onValueChange={onChangeWeight}
-      />
-      <Textfield
-        id="unit"
-        label="Unit"
-        defaultValue={unit}
-        onValueChange={onChangeUnit}
-      />
+      <h2>Register new user</h2>
+      <div>
+        <Textfield
+          id="email"
+          label="Email"
+          type="email"
+          defaultValue={userState.email}
+          handleOnChange={handleChange}
+        />
+        <Textfield
+          id="password"
+          label="Password"
+          type="password"
+          defaultValue={userState.password}
+          handleOnChange={handleChange}
+        />
+        <Textfield
+          id="name"
+          label="Name"
+          type="text"
+          defaultValue={userState.name}
+          handleOnChange={handleChange}
+        />
+        <Select
+          id="gender"
+          label="Gender"
+          selected={userState.gender}
+          options={genders}
+          handleOnChange={handleChange}
+        />
+        <Textfield
+          id="height"
+          label="Height"
+          type="number"
+          defaultValue={userState.height}
+          handleOnChange={handleChange}
+        />
+        <Textfield
+          id="weight"
+          label="Weight"
+          type="number"
+          defaultValue={userState.weight}
+          handleOnChange={handleChange}
+        />
+        <Select
+          id="unit"
+          label="Unit"
+          selected={userState.unit}
+          options={units}
+          handleOnChange={handleChange}
+        />
+      </div>
       <div className="button">
         <button onClick={onClickRegister}>Register</button>
       </div>

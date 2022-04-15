@@ -9,6 +9,7 @@ export const LOGIN = gql`
       user {
         _id
         email
+        name
       }
     }
   }
@@ -26,8 +27,8 @@ export const REGISTER = gql`
       token
       user {
         _id
-        name
         email
+        name
       }
     }
   }

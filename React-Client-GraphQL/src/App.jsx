@@ -1,14 +1,12 @@
 import React from 'react';
 
-import { Register } from './components/Register';
+import Auth from './utils/auth';
+import { Base, NotLoggedIn } from './containers';
 
 import './App.scss';
 
 export const App = () => {
-  return (
-    <div className="app">
-      <h1>React Client GraphQL</h1>
-      <Register />
-    </div>
-  );
+  const loggedIn = Auth.loggedIn();
+  console.log(loggedIn);
+  return <div className="app">{loggedIn ? <Base /> : <NotLoggedIn />}</div>;
 };
